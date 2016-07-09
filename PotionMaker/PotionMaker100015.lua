@@ -901,7 +901,7 @@ do
 		if PotMaker.language.name == "de" then
 			self.searchName = format("<<Cm:1>>", self:GetName(), 2):gsub("ene", "en")
 
-		-- For JP
+		---- for Japanese Translation ----
 		elseif PotMaker.language.name == "jp" then
 			-- Remove space
 			self.searchName = format(SI_TOOLTIP_ITEM_NAME, self:GetName():gsub(" ", ""))
@@ -925,6 +925,8 @@ do
 		if PotMaker.questPotionsOnly then
 			if self.itemLink == "" then return false end
 			if not find(PotMaker.quests, self:GetSearchName()) then return false end
+		
+			---- for Japanese Translation ----
 			if PotMaker.language.name ~= "jp" then
 				if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
 			end
@@ -994,6 +996,8 @@ do
 		if PotMaker.questPotionsOnly then
 			if self.itemLink == "" then return false end
 			if not find(PotMaker.quests, self:GetSearchName()) then return false end
+
+			---- for Japanese Translation ----
 			if PotMaker.language.name ~= "jp" then
 				if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
 			end
@@ -1867,7 +1871,7 @@ end
 
 local function ParseQuest(quest)
 
-	-- For JP
+	---- for Japanese Translation ----
 	if PotMaker.language.name == "jp" then
 		return quest;
 	end
