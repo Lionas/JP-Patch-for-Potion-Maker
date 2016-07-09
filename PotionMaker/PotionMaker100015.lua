@@ -663,6 +663,7 @@ function PotMaker.initVar()
 		end
 		allReagents[name].matching = others
 	end
+
 end
 
 function PotMaker.IsProtected(bagId, slotIndex)
@@ -899,6 +900,12 @@ do
 		if self.searchName ~= "" then return self.searchName end
 		if PotMaker.language.name == "de" then
 			self.searchName = format("<<Cm:1>>", self:GetName(), 2):gsub("ene", "en")
+
+		-- For JP
+		elseif PotMaker.language.name == "jp" then
+			-- Remove space
+			self.searchName = format(SI_TOOLTIP_ITEM_NAME, self:GetName():gsub(" ", ""))
+
 		else
 			self.searchName = format(SI_TOOLTIP_ITEM_NAME, self:GetName())
 		end
@@ -918,8 +925,11 @@ do
 		if PotMaker.questPotionsOnly then
 			if self.itemLink == "" then return false end
 			if not find(PotMaker.quests, self:GetSearchName()) then return false end
-			if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
+			if PotMaker.language.name ~= "jp" then
+				if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
+			end
 		end
+
 
 		if PotMaker.favoritesOnly then
 			self:createFavoriteIdentifier()
@@ -984,7 +994,9 @@ do
 		if PotMaker.questPotionsOnly then
 			if self.itemLink == "" then return false end
 			if not find(PotMaker.quests, self:GetSearchName()) then return false end
-			if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
+			if PotMaker.language.name ~= "jp" then
+				if not find(PotMaker.quests, zo_strjoin(nil, "%A", self:GetSearchName(), "%A")) then return false end
+			end
 		end
 
 		if PotMaker.favoritesOnly then
@@ -1854,6 +1866,12 @@ function PotMaker.findFavorites()
 end
 
 local function ParseQuest(quest)
+
+	-- For JP
+	if PotMaker.language.name == "jp" then
+		return quest;
+	end
+
 	-- UTF8 of &nbsp; french has it. It is breaking ANSI string.find
 	quest = quest:gsub("\194\160", " ")
 	if PotMaker.language.name == "fr" then
@@ -1864,12 +1882,13 @@ local function ParseQuest(quest)
 		end
 	end
 	quest = zo_strjoin(nil, quest, " ", zo_strformat(SI_TOOLTIP_ITEM_NAME, quest))
+
 	return quest
 end
 
 local function InternalStartSearch(quests)
-	PotMaker.quests = #quests > 8 and quests:gsub("Esssenz", "Essenz") or ""
 
+	PotMaker.quests = #quests > 8 and quests:gsub("Esssenz", "Essenz") or ""
 	PotMaker.resultsMaxIndex = 0
 	PotionMakerOutput.title:SetText(PotMaker.language.search_results)
 	PotMaker.restartSearch()
@@ -1907,6 +1926,7 @@ local function GetQuests()
 	quests[#quests + 1] = " "
 	-- combine them at once
 	quests = table.concat(quests, " ")
+
 	return quests
 end
 
@@ -1915,9 +1935,7 @@ function PotMaker.startSearch()
 	PotMaker.potion2ReagentFilter = ZO_CheckButton_IsChecked(PotionMakerOnly2)
 	PotMaker.questPotionsOnly = ZO_CheckButton_IsChecked(PotionMakerQuestPotions)
 	PotMaker.favoritesOnly = false
-
 	local quests = PotMaker.questPotionsOnly and GetQuests() or ""
-
 	InternalStartSearch(quests)
 end
 
